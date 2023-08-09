@@ -13,11 +13,18 @@ namespace prjAjaxhomework.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index()//HW1
         {
             return View();
         }
-
+        public IActionResult Register()//HW3
+        {
+            return View();
+        }
+        public IActionResult City()//HW4
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

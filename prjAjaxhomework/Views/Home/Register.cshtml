@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6">
+        <form id="form1">
+            <div class="mb-3">
+                <label for="username" class="form-label">UserName</label>
+                <input type="text" class="form-control" id="username" name="Name">
+            </div>
+            <div id="checkResultDiv"></div>
+            <div class="mb-3">
+                <label for="useremail" class="form-label">UserEmail</label>
+                <input type="text" class="form-control" id="useremail" name="Email">
+            </div>
+            <div class="mb-3">
+                <label for="userage" class="form-label">UserAge</label>
+                <input type="text" class="form-control" id="userage" name="Age">
+            </div>
+            <div class="mb-3">
+                <label for="formFile" class="form-label">檔案上傳</label>
+                <input class="form-control" type="file" id="formFile" name="file">
+            </div>
+            <button id="button1" type="submit" class="btn btn-primary">送出</button>
+        </form>
+        <div id="div1" class="alert alert-info"></div>
+    </div>
+    <div class="col-3"></div>
+    <a href="https://www.ispan.com.tw" id="a1">ISPN</a>
+</div>
+
+@section Styles{
+    <style>
+
+    </style>
+}
+@section Scripts{
+    <script>
+        const btn = document.querySelector('#button1');
+        const theA = document.querySelector('#a1')
+        const theDiv = document.querySelector('#div1');
+        const checkResultDiv = document.querySelector('#checkResultDiv');
+        const usernameInput = document.querySelector('#username');
+
+        usernameInput.addEventListener('blur', () => {
+            const username = usernameInput.value;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `/api/CheckAccount?username=${username}`);
+            xhr.send();
+
+            xhr.addEventListener('load', () => {
+                const response = JSON.parse(xhr.responseText);
+                if (response.exists) {
+                    checkResultDiv.innerHTML = '<span style="color: red;">帳號已存在</span>';
+                } else {
+                    checkResultDiv.innerHTML = '<span style="color: green;">帳號可用</span>';
+                }
+            });
+        });
+        // 防止閃爍事件
+        btn.addEventListener('click', event => {
+            event.preventDefault();
+            // 步驟一連線
+            const xhr = new XMLHttpRequest();
+
+            // 步驟二對伺服器發出要求(Request)
+            xhr.open('POST', '/api/Register');
+            //xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'))使用formdata
+            //xhr.send(`name=${txtName.value}&age=${txtAge.value}`);)使用formdata
+
+            //改用FormData
+            const formData = new FormData(document.querySelector('#form1'));
+                xhr.send(formData);
+
+            // 步驟三接收伺服器回傳的資料
+            xhr.addEventListener('load', () => {
+                const data = xhr.responseText;
+
+                // 步驟四讀資料 JSON XML
+                // 步驟五顯示資料
+                theDiv.innerHTML = `<h3>${data}</h3>`;
+            });
+        });
+    </script>
+    }

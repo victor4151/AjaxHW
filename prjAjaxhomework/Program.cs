@@ -1,7 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using prjAjaxhomework.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//在檔案中使用相依性注入設定
+builder.Services.AddDbContext<DemoContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("DemoConnection")));
 
 var app = builder.Build();
 

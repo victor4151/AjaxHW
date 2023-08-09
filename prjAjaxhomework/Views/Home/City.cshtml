@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "City";
+}
+
+<h1>City</h1>
+<div class="mb-3">
+    <label for="citySelect" class="form-label">選擇城市</label>
+   <select class="form-control" id="citySelect">
+@*        <option value="">請選擇城市</option>
+        <option value="台北市">台北市</option>
+        <option value="新北市">新北市</option>
+        <option value="桃園市">桃園市</option>
+        <option value="台中市">台中市</option>
+        <option value="台南市">台南市</option>
+        <option value="高雄市">高雄市</option>*@
+        <option value="">請選擇城市</option>
+    </select>
+
+</div>
+<div>
+    已選擇的城市：<span id="selectedCity"></span>
+</div>
+
+@section Styles{
+    <style>
+
+    </style>
+}
+@section Scripts{
+    <script>
+        // 載入需要的資訊
+        const cities = ["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"];
+        const citySelect = document.querySelector('#citySelect');
+        const selectedCitySpan = document.querySelector('#selectedCity'); // 修改這行的 id
+
+        // 將選到的城市顯示在 span 標籤中
+        cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+        });
+
+        // 監聽標籤變化
+        citySelect.addEventListener('change', () => {
+            const selectedCity = citySelect.value;
+            selectedCitySpan.textContent = selectedCity;
+        });
+    </script>
+}
