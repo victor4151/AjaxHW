@@ -17,11 +17,19 @@ namespace prjAjaxhomework.Controllers
         {
             return View();
         }
-        public IActionResult Register()//HW3
+        public IActionResult Register()//HW3 && HW5
         {
             return View();
         }
         public IActionResult City()//HW4
+        {
+            return View();
+        }
+        public IActionResult Fetch()//HW6
+        {
+            return View();
+        }
+        public IActionResult Travel()//HW2
         {
             return View();
         }

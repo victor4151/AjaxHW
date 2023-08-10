@@ -24,6 +24,7 @@
                 <label for="formFile" class="form-label">檔案上傳</label>
                 <input class="form-control" type="file" id="formFile" name="file">
             </div>
+            <img id="imagePreview" src="#" alt="圖片預覽" style="max-width: 100%; max-height: 200px;">
             <button id="button1" type="submit" class="btn btn-primary">送出</button>
         </form>
         <div id="div1" class="alert alert-info"></div>
@@ -34,55 +35,68 @@
 
 @section Styles{
     <style>
-
     </style>
 }
+
 @section Scripts{
+
     <script>
-        const btn = document.querySelector('#button1');
-        const theA = document.querySelector('#a1')
-        const theDiv = document.querySelector('#div1');
-        const checkResultDiv = document.querySelector('#checkResultDiv');
-        const usernameInput = document.querySelector('#username');
+        $(document).ready(function () {
+            const btn = $('#button1');
+            const theA = $('#a1');
+            const theDiv = $('#div1');
+            const checkResultDiv = $('#checkResultDiv');
+            const usernameInput = $('#username');
+            const fileInput = $('#formFile');
+            const imagePreview = $('#imagePreview');
 
-        usernameInput.addEventListener('blur', () => {
-            const username = usernameInput.value;
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', `/api/CheckAccount?username=${username}`);
-            xhr.send();
+            usernameInput.on('blur', () => {
+                const username = usernameInput.val();
+                $.get(`/api/CheckAccount?username=${username}`, function (data) {
+                    if (data.exists) {
+                        checkResultDiv.html('<span style="color: red;">帳號已存在</span>');
+                    } else {
+                        checkResultDiv.html('<span style="color: green;">帳號可用</span>');
+                    }
+                });
+            });
 
-            xhr.addEventListener('load', () => {
-                const response = JSON.parse(xhr.responseText);
-                if (response.exists) {
-                    checkResultDiv.innerHTML = '<span style="color: red;">帳號已存在</span>';
+            btn.on('click', function (event) {
+                event.preventDefault();
+
+                const formData = new FormData($('#form1')[0]);
+                $.ajax({
+                    url: '@Url.Content("/api/Register")',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        alert('新增成功');
+                        location.href = '@Url.Content("/members")';
+                    },
+                    error: function () {
+                        alert('有錯誤!!');
+                    }
+                });
+            });
+
+            fileInput.on('change', function (event) {
+                const selectedFile = event.target.files[0];
+
+                if (selectedFile) {
+                    const objectURL = URL.createObjectURL(selectedFile);
+                    imagePreview.attr('src', objectURL);
                 } else {
-                    checkResultDiv.innerHTML = '<span style="color: green;">帳號可用</span>';
+                    imagePreview.attr('src', '#'); // 清空預覽
+                }
+            });
+
+            theA.on('click', function (event) {
+                if (!window.confirm('真的要去嗎??')) {
+                    event.preventDefault();
                 }
             });
         });
-        // 防止閃爍事件
-        btn.addEventListener('click', event => {
-            event.preventDefault();
-            // 步驟一連線
-            const xhr = new XMLHttpRequest();
-
-            // 步驟二對伺服器發出要求(Request)
-            xhr.open('POST', '/api/Register');
-            //xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'))使用formdata
-            //xhr.send(`name=${txtName.value}&age=${txtAge.value}`);)使用formdata
-
-            //改用FormData
-            const formData = new FormData(document.querySelector('#form1'));
-                xhr.send(formData);
-
-            // 步驟三接收伺服器回傳的資料
-            xhr.addEventListener('load', () => {
-                const data = xhr.responseText;
-
-                // 步驟四讀資料 JSON XML
-                // 步驟五顯示資料
-                theDiv.innerHTML = `<h3>${data}</h3>`;
-            });
-        });
     </script>
-    }
+}

@@ -47,10 +47,34 @@ namespace prjAjaxhomework.Controllers
             _context.SaveChanges();
             return Content("新增成功");
         }
+        public IActionResult GetImageByte(int id = 1)
+        {
+            Members? member = _context.Members.Find(id);
+            byte[]? image = member.FileData;
+            return File(image, "image/jpeg");
+        }
         public IActionResult CheckAccount(string username)
         {
             bool accountExists = _context.Members.Any(m => m.Name == username);
             return Json(new { exists = accountExists });
+        }
+        public IActionResult Cities()
+        {
+            var cities = _context.Address.Select(c => c.City
+            ).Distinct();
+            return Json(cities);
+        }
+        public IActionResult Districts(string city)
+        {
+            var districts = _context.Address.Where(a => a.City == city).Select(c => c.SiteId).Distinct();
+
+            return Json(districts);
+        }
+        public IActionResult Roads(string siteId)
+        {
+            var roads = _context.Address.Where(a => a.SiteId == siteId).Select(c => c.Road).Distinct();
+
+            return Json(roads);
         }
     }
 }

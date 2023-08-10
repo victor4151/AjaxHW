@@ -1,0 +1,144 @@
+﻿
+@{
+    ViewData["Title"] = "Fetch";
+}
+
+<h1>HW6改用fetch() 加上 async await 來完成住址連動的功能</h1>
+
+<select id="selectCity"></select>
+<select id="selectDistrict"></select>
+<select id="selectRoad"></select>
+<div id="div1" class="alert alert-info"> </div>
+
+@section Styles{
+    <style>
+
+    </style>
+}
+
+@section Scripts{
+    <script>
+        ////取出資料
+        //const selCity = document.querySelector('#selectCity');
+        //const selDistrict = document.querySelector('#selectDistrict');
+        //const selRoad = document.querySelector('#selectRoad');
+        //const theDiv = document.querySelector('#div1');
+        ////將城市資料顯示出來
+        //function loadCity() {
+        //    const xhr = new XMLHttpRequest();
+        //    xhr.open('GET', '@Url.Content("/api/cities")');
+        //    xhr.send();
+        //    xhr.addEventListener('load', () => {
+        //        const datas = JSON.parse(xhr.responseText);
+        //        const cities = datas.map(city => `<option value='${city}'>${city}</option>`)
+        //        selCity.innerHTML = cities.join("");
+        //        loadDistrict()
+        //    })
+        //}
+        ////區
+        //function loadDistrict() {
+        //    const xhr = new XMLHttpRequest();
+        //    xhr.open('GET', `@Url.Content("/api/districts")?city=${selCity.value}`);
+        //    xhr.send();
+        //    xhr.addEventListener('load', () => {
+        //        const datas = JSON.parse(xhr.responseText);
+        //        const districts = datas.map(district => `<option value='${district}'>${district}</option>`)
+        //        selDistrict.innerHTML = districts.join("");
+        //        loadRoad()
+        //    })
+        //}
+        ////路
+        //function loadRoad() {
+        //    const xhr = new XMLHttpRequest();
+        //    xhr.open('GET', `@Url.Content("/api/roads")?siteId=${selDistrict.value}`);
+        //    xhr.send();
+        //    xhr.addEventListener('load', () => {
+        //        const datas = JSON.parse(xhr.responseText);
+        //        const roads = datas.map(road => `<option value='${road}'>${road}</option>`)
+        //        selRoad.innerHTML = roads.join("");
+        //        show();
+        //    })
+        //}
+        //loadCity()
+
+        ////當下拉條改變時
+        //selCity.addEventListener('change', () => {
+        //    //  theDiv.textContent = `${selCity.options[selCity.selectedIndex].text}-${selCity.options[selCity.selectedIndex].value} `
+        //    theDiv.textContent = selCity.value;
+        //    loadDistrict();
+
+        //})
+        //selDistrict.addEventListener('change', () => {
+        //    //  theDiv.textContent = `${selCity.options[selCity.selectedIndex].text}-${selCity.options[selCity.selectedIndex].value} `
+        //    theDiv.textContent += selDistrict.value;
+        //    loadRoad();
+
+        //})
+        ////顯示實際上的資訊
+        //selRoad.addEventListener('change', show)
+        //function show() {
+        //    theDiv.textContent = `${selDistrict.value} ${selRoad.value}`;
+        //}
+
+        //取出資料
+        const selCity = document.querySelector('#selectCity');
+        const selDistrict = document.querySelector('#selectDistrict');
+        const selRoad = document.querySelector('#selectRoad');
+        const theDiv = document.querySelector('#div1');
+
+        // 使用 async/await 改寫取資料的函數
+        async function fetchData(url) {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        }
+
+        //將城市資料顯示出來
+        async function loadCity() {
+            const datas = await fetchData('@Url.Content("/api/cities")');
+            const cities = datas.map(city => `<option value='${city}'>${city}</option>`)
+            selCity.innerHTML = cities.join("");
+            loadDistrict()
+        }
+
+        //區
+        async function loadDistrict() {
+            const datas = await fetchData(`@Url.Content("/api/districts")?city=${selCity.value}`);
+            const districts = datas.map(district => `<option value='${district}'>${district}</option>`)
+            selDistrict.innerHTML = districts.join("");
+            loadRoad()
+        }
+
+        //路
+        async function loadRoad() {
+            const datas = await fetchData(`@Url.Content("/api/roads")?siteId=${selDistrict.value}`);
+            const roads = datas.map(road => `<option value='${road}'>${road}</option>`)
+            selRoad.innerHTML = roads.join("");
+            show();
+        }
+
+        // 初始化
+        async function init() {
+            await loadCity();
+            selCity.addEventListener('change', () => {
+                theDiv.textContent = selCity.value;
+                loadDistrict();
+            });
+            selDistrict.addEventListener('change', () => {
+                theDiv.textContent += selDistrict.value;
+                loadRoad();
+            });
+            selRoad.addEventListener('change', show);
+        }
+
+        //顯示實際上的資訊
+        function show() {
+            theDiv.textContent = `${selDistrict.value} ${selRoad.value}`;
+        }
+
+        // 呼叫初始化函數
+        init();
+
+
+    </script>
+}
